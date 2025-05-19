@@ -1,24 +1,18 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { CoffeePlanComponent } from './coffee-plan/coffee-plan.component';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { PlanPickerComponent } from './plan-picker/plan-picker.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CoffeePlanComponent],
+  imports: [PlanPickerComponent],
   template: `
     <div class="content">
-      <h1 class="title">Coffee Plans</h1>
+      <h1 class="title">Coffee Plans - Angular</h1>
 
       <h2 class="subtitle">We travel the world to source the very best single origin coffee for you</h2>
 
-      <div class="plans">
-        @for (plan of plans(); track plan) {
-          <app-coffee-plan [name]="plan" />
-        }
-      </div>
+      <app-plan-picker />
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {
-  plans = signal(['The Single', 'The Curious', 'The Addict', 'The Hacker']);
-}
+export class AppComponent {}
