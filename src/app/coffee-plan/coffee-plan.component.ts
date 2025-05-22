@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-coffee-plan',
   imports: [],
   template: `
-    <div class="plan">
+    <div class="plan" (click)="selectPlan()" [class]="{ 'active-plan': selected() }">
       <div class="description">
         <span class="title"> {{ name() }} </span>
       </div>
@@ -14,4 +14,11 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class CoffeePlanComponent {
   name = input('Default Plan');
+  selected = input(false);
+
+  selectedPlan = output<string>();
+
+  selectPlan() {
+    this.selectedPlan.emit(this.name());
+  }
 }
