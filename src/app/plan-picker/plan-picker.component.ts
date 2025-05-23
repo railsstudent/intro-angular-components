@@ -6,6 +6,7 @@ import { CoffeePlanComponent } from '../coffee-plan/coffee-plan.component';
   imports: [CoffeePlanComponent],
   template: `
     <div class="plans">
+      {{selectedPlan()}}
       @for (plan of plans(); track plan) {
         <app-coffee-plan [name]="plan" (selectedPlan)="handleSelectPlan($event)" [selected]="selectedPlan() === plan" />
       }
