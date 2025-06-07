@@ -16,22 +16,52 @@ import {
   ],
   template: `
     <div class="plan" (click)="selectPlan()" [class]="{ 'active-plan': selected() }">
-      <ng-container
-        [ngTemplateOutlet]="selected() ? icons : undefined"
-        [ngTemplateOutletContext]="{ $implicit: iconNames() }"
-      />
+      <ng-container [ngTemplateOutlet]="selected() && name().startsWith('The') ? coffees : undefined" />
       <div class="description">
         <span class="title"> {{ name() }} </span>
       </div>
+      <ng-container [ngTemplateOutlet]="selected() && !name().startsWith('The') ? beverages : undefined" />
 
-      <ng-template #icons let-iconNames>
-        <div icons>
-          @for (iconName of iconNames; track iconName) {
-            <ng-icon [name]="iconName" style="width: 48px; height: 48px;" />
+      <ng-template #coffees>
+        <div class="coffee">
+          @for (iconName of ['matCoffeeOutline', 'matCoffeeMakerOutline']; track iconName) {
+            <ng-icon class="icon" [name]="iconName" />
+          }
+        </div>
+      </ng-template>
+
+      <ng-template #beverages>
+        <div class="beverage">
+          @for (iconName of ['matEmojiFoodBeverageOutline', 'matFastfoodOutline']; track iconName) {
+            <ng-icon class="icon" [name]="iconName" />
           }
         </div>
       </ng-template>
     </div>
+  `,
+  styles: `
+    .coffee {
+      flex: display;
+      align-items: center;
+
+      > .icon {
+        width: 48px;
+        height: 48px;
+        color: brown;
+      }
+    }
+
+    .beverage {
+      display: flex; 
+      flex-direction: column; 
+      padding: 0.25rem;
+
+      > .icon {
+        width: 42px;
+        height: 42px;
+        color: green;
+      }
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
