@@ -50,6 +50,30 @@ import {
       </ng-template>
     </div>
   `,
+  styles: `
+    .coffee {
+      flex: display;
+      align-items: center;
+
+      > .icon {
+        width: 48px;
+        height: 48px;
+        color: brown;
+      }
+    }
+
+    .beverage {
+      display: flex;
+      flex-direction: column;
+      padding: 0.25rem;
+
+      > .icon {
+        width: 42px;
+        height: 42px;
+        color: green;
+      }
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlanPickerComponent {
