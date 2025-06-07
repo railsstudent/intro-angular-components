@@ -23,8 +23,8 @@ import {
       {{ selectedPlan() }}
       @for (plan of plans(); track plan) {
         @let isSelected = selectedPlan() === plan;
-        @let coffeeTemplate = isSelected && plan.startsWith('The') ? coffees : undefined;
-        @let beverageTemplate = isSelected && !plan.startsWith('The') ? beverages : undefined;
+        @let coffeeTemplate = isSelected && plan.startsWith('The') ? coffee : undefined;
+        @let beverageTemplate = isSelected && !plan.startsWith('The') ? beverage : undefined;
         <app-coffee-plan
           [name]="plan"
           (selectedPlan)="handleSelectPlan($event)"
@@ -33,7 +33,7 @@ import {
           [beverageTemplate]="beverageTemplate"
         />
       }
-      <ng-template #coffees>
+      <ng-template #coffee>
         <div class="coffee">
           @for (iconName of ['matCoffeeOutline', 'matCoffeeMakerOutline']; track iconName) {
             <ng-icon class="icon" [name]="iconName" />
@@ -41,7 +41,7 @@ import {
         </div>
       </ng-template>
 
-      <ng-template #beverages>
+      <ng-template #beverage>
         <div class="beverage">
           @for (iconName of ['matEmojiFoodBeverageOutline', 'matFastfoodOutline']; track iconName) {
             <ng-icon class="icon" [name]="iconName" />
