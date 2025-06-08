@@ -1,0 +1,22 @@
+.beverage {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+
+    > * {
+      width: 42px;
+      height: 42px;
+      color: green;
+    }
+}
+
+.coffee {
+    display: flex;
+    align-items: center;
+
+    > * {
+      width: 48px;
+      height: 48px;
+      color: brown;
+    }
+}
