@@ -9,8 +9,8 @@ import { matCoffeeOutline, matCoffeeMakerOutline, matEmojiFoodBeverageOutline, m
     <div class="plan" (click)="selectPlan()" [class]="{ 'active-plan': selected() }">
       @if (isShowCoffee()) {
         <div class="coffee">
-          <ng-icon name="matCoffeeOutline" width="48" height="48" />
-          <ng-icon name="matCoffeeMakerOutline" width="48" height="48" />
+          <ng-icon name="matCoffeeOutline" />
+          <ng-icon name="matCoffeeMakerOutline" />
         </div>
       }
       <div class="description">
@@ -18,8 +18,8 @@ import { matCoffeeOutline, matCoffeeMakerOutline, matEmojiFoodBeverageOutline, m
       </div>
       @if (isShowBeverage()) {
         <div class="beverage">
-          <ng-icon name="matEmojiFoodBeverageOutline" width="42" height="42" color="green" />
-          <ng-icon name="matFastfoodOutline" width="42" height="42" color="green" />
+          <ng-icon name="matEmojiFoodBeverageOutline" />
+          <ng-icon name="matFastfoodOutline" />
         </div>
       }
     </div>
@@ -29,10 +29,22 @@ import { matCoffeeOutline, matCoffeeMakerOutline, matEmojiFoodBeverageOutline, m
       display: flex;
       flex-direction: column;
       padding: 0.25rem;
+
+      > * {
+        width: 42px;
+        height: 42px;
+        color: green;
+      }
     }
     .coffee {
       display: flex;
       align-items: center;
+
+      > * {
+        width: 48px;
+        height: 48px;
+        color: brown;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
