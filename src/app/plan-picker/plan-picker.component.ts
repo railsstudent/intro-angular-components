@@ -52,7 +52,7 @@ import {
   `,
   styles: `
     .coffee {
-      flex: display;
+      display: flex;
       align-items: center;
 
       > .icon {
