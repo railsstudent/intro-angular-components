@@ -23,7 +23,7 @@ describe('PlanPickerComponent', () => {
     } as TemplateRef<any>;
 
     await TestBed.configureTestingModule({
-      declarations: [PlanPickerComponent, CoffeePlanComponent, AddCoffeePlanComponent],
+      imports: [PlanPickerComponent, CoffeePlanComponent, AddCoffeePlanComponent], // For standalone components
       schemas: [NO_ERRORS_SCHEMA], // Using NO_ERRORS_SCHEMA to avoid issues with NgIcon and other child components not critical to these tests
     }).compileComponents();
 
