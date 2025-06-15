@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, TemplateRef, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, TemplateRef, viewChild } from '@angular/core';
 import { AddCoffeePlanComponent } from '../add-coffee-plan/add-coffee-plan.component';
 import { CoffeePlanComponent } from '../coffee-plan/coffee-plan.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -12,8 +12,10 @@ const COFFEE_PLAN_PREFIX = 'The';
   viewProviders: [provideIcons({ matCoffeeOutline, matCoffeeMakerOutline, matEmojiFoodBeverageOutline, matFastfoodOutline })],
   template: `
     <div class="plans">
-      <app-add-coffee-plan (addCoffeePlan)="addPlan($event)" />
-      {{selectedPlan()}}
+      <app-add-coffee-plan (addCoffeePlan)="addPlan($event)" (hover)="hover.set($event)">
+        {{ addPlanText() }}
+      </app-add-coffee-plan>
+      {{ selectedPlan() }}
       @for (plan of plans(); track plan) {
         <app-coffee-plan [name]="plan" (selectedPlan)="handleSelectPlan($event)" [selected]="isPlanSelected(plan)"
           [beverage]="getBeverageIconTemplate(plan)" [coffee]="getCoffeeIconTemplate(plan)" />
@@ -44,6 +46,9 @@ export class PlanPickerComponent {
   plans = signal(['The Single', 'The Curious', 'The Addict', 'The Hacker', 'Vibe Coder']);
 
   selectedPlan = signal('');
+  hover = signal(false);
+
+  addPlanText = computed(() => `Add Plan ${this.hover() ? '(+1)' : ''}`);
 
   handleSelectPlan(name: string) {
     this.selectedPlan.set(name);
