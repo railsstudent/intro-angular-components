@@ -116,4 +116,21 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
     const ngIcons = planDiv.queryAll(By.css('ng-icon'));
     expect(ngIcons.length).withContext('Should be 4 ng-icon elements in total').toBe(4);
   });
+
+  it('should display correct icons in the coffee section', () => {
+    testHost.isSelected.set(true);
+    fixture.detectChanges();
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).withContext('Could not find .plan div').toBeTruthy();
+
+    const coffeeDiv = planDiv.query(By.css('div.coffee'));
+    expect(coffeeDiv).withContext('Could not find div.coffee').toBeTruthy();
+
+    const coffeeIcons = coffeeDiv.queryAll(By.css('ng-icon'));
+    expect(coffeeIcons.length).withContext('div.coffee should have 2 ng-icon elements').toBe(2);
+
+    expect(coffeeIcons[0].attributes['name']).withContext('First icon in div.coffee should be matCoffeeOutline').toBe('matCoffeeOutline');
+    expect(coffeeIcons[1].attributes['name']).withContext('Second icon in div.coffee should be matCoffeeMakerOutline').toBe('matCoffeeMakerOutline');
+  });
 });
