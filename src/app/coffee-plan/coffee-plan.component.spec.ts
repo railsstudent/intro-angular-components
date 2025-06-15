@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Component, DebugElement } from '@angular/core';
+import { Component, DebugElement, TemplateRef, signal, provideZonelessChangeDetection, viewChild } from '@angular/core';
 import { CoffeePlanComponent } from './coffee-plan.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -11,11 +11,30 @@ import {
 } from '@ng-icons/material-icons/outline';
 
 @Component({
-  template: `<app-coffee-plan [name]="planName" [selected]="isSelected"></app-coffee-plan>`,
+  standalone: true,
+  imports: [CoffeePlanComponent, NgIcon],
+  template: `
+    <app-coffee-plan [name]="planName()" [selected]="isSelected()" [coffee]="coffeeTemplateRef()" [beverage]="beverageTemplateRef()"></app-coffee-plan>
+    <ng-template #coffee>
+      <div class="coffee">
+        <ng-icon name="matCoffeeOutline" />
+        <ng-icon name="matCoffeeMakerOutline" />
+      </div>
+    </ng-template>
+    <ng-template #beverage>
+      <div class="beverage">
+        <ng-icon name="matEmojiFoodBeverageOutline" />
+        <ng-icon name="matFastfoodOutline" />
+      </div>
+    </ng-template>
+  `,
 })
 class TestHostComponent {
-  planName: string = 'Default Plan';
-  isSelected: boolean = false;
+  planName = signal('Default Plan');
+  isSelected = signal(false);
+
+  coffeeTemplateRef = viewChild.required<TemplateRef<any>>('coffee');
+  beverageTemplateRef = viewChild.required<TemplateRef<any>>('beverage');
 }
 
 describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
@@ -25,9 +44,10 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CoffeePlanComponent, TestHostComponent],
-      imports: [NgIcon],
+      declarations: [TestHostComponent], // CoffeePlanComponent removed
+      imports: [NgIcon], // NgIcon might be needed for the test setup itself, TestHostComponent handles its own
       providers: [
+        provideZonelessChangeDetection(),
         provideIcons({
           matCoffeeOutline,
           matCoffeeMakerOutline,
@@ -40,7 +60,7 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
     fixture = TestBed.createComponent(TestHostComponent);
     testHost = fixture.componentInstance;
     componentDebugElement = fixture.debugElement.query(By.directive(CoffeePlanComponent));
-    fixture.detectChanges();
+    // fixture.detectChanges(); // Moved to individual tests or describe blocks after setting inputs
   });
 
   const getPlanDivChildren = (): DebugElement[] => {
@@ -61,13 +81,35 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
     expect(componentDebugElement.componentInstance).toBeTruthy();
   });
 
+  it("should have 'plan' and 'active-plan' classes when isSelected is true", () => {
+    testHost.isSelected.set(true);
+    fixture.detectChanges(); // Ensure change detection is run after setting input
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).toBeTruthy(); // Ensure the element exists
+    expect(planDiv.nativeElement.classList.contains('plan')).toBeTrue();
+    expect(planDiv.nativeElement.classList.contains('active-plan')).toBeTrue();
+  });
+
+  it("should have only 'plan' class and not 'active-plan' when isSelected is false", () => {
+    testHost.isSelected.set(false);
+    fixture.detectChanges(); // Ensure change detection is run after setting input
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).toBeTruthy(); // Ensure the element exists
+    expect(planDiv.nativeElement.classList.contains('plan')).toBeTrue();
+    expect(planDiv.nativeElement.classList.contains('active-plan')).toBeFalse();
+  });
+
   describe('When plan is selected and name starts with "The"', () => {
     let coffeeIconWrapper: DebugElement | null;
     let descriptionDiv: DebugElement | null;
 
     beforeEach(() => {
-      testHost.planName = 'The Premium Blend';
-      testHost.isSelected = true;
+      testHost.planName.set('The Premium Blend');
+      testHost.isSelected.set(true);
+      // coffeeTemplateRef and beverageTemplateRef are now directly passed.
+      // fixture.detectChanges(); // Call after inputs are set if needed for specific test logic.
       fixture.detectChanges();
       coffeeIconWrapper = getIconWrapperDivByIconName('matCoffeeOutline');
       descriptionDiv = componentDebugElement.query(By.css('.description'));
@@ -110,8 +152,10 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
     let descriptionDiv: DebugElement | null;
 
     beforeEach(() => {
-      testHost.planName = 'Casual Cup';
-      testHost.isSelected = true;
+      testHost.planName.set('Casual Cup');
+      testHost.isSelected.set(true);
+      // coffeeTemplateRef and beverageTemplateRef are now directly passed.
+      // fixture.detectChanges(); // Call after inputs are set if needed for specific test logic.
       fixture.detectChanges();
       beverageIconWrapper = getIconWrapperDivByIconName('matEmojiFoodBeverageOutline');
       descriptionDiv = componentDebugElement.query(By.css('.description'));
@@ -153,8 +197,11 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
 
   describe('When plan is NOT selected', () => {
     it('should display only the description div for "The" plan', () => {
-      testHost.planName = 'The Premium Blend';
-      testHost.isSelected = false;
+      testHost.planName.set('The Premium Blend');
+      testHost.isSelected.set(false);
+      // coffeeTemplateRef and beverageTemplateRef are directly passed.
+      // No need to set them to undefined here as they are required ViewChilds.
+      // fixture.detectChanges(); // Call after inputs are set if needed for specific test logic.
       fixture.detectChanges();
       const children = getPlanDivChildren();
       expect(children.length).toBe(1);
@@ -163,8 +210,11 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
     });
 
     it('should display only the description div for non-"The" plan', () => {
-      testHost.planName = 'Casual Cup';
-      testHost.isSelected = false;
+      testHost.planName.set('Casual Cup');
+      testHost.isSelected.set(false);
+      // coffeeTemplateRef and beverageTemplateRef are directly passed.
+      // No need to set them to undefined here as they are required ViewChilds.
+      // fixture.detectChanges(); // Call after inputs are set if needed for specific test logic.
       fixture.detectChanges();
       const children = getPlanDivChildren();
       expect(children.length).toBe(1);
