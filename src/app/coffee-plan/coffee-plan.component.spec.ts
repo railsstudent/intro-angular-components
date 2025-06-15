@@ -14,7 +14,12 @@ import {
   standalone: true,
   imports: [CoffeePlanComponent, NgIcon],
   template: `
-    <app-coffee-plan [name]="planName()" [selected]="isSelected()" [coffee]="coffeeTemplateRef()" [beverage]="beverageTemplateRef()"></app-coffee-plan>
+    <app-coffee-plan
+      [name]="planName()"
+      [selected]="isSelected()"
+      [coffee]="passCoffeeTemplate() ? coffeeTemplateRef() : undefined"
+      [beverage]="passBeverageTemplate() ? beverageTemplateRef() : undefined">
+    </app-coffee-plan>
     <ng-template #coffee>
       <div class="coffee">
         <ng-icon name="matCoffeeOutline" />
@@ -32,6 +37,8 @@ import {
 class TestHostComponent {
   planName = signal('Default Plan');
   isSelected = signal(false);
+  passCoffeeTemplate = signal(true);
+  passBeverageTemplate = signal(true);
 
   coffeeTemplateRef = viewChild.required<TemplateRef<any>>('coffee');
   beverageTemplateRef = viewChild.required<TemplateRef<any>>('beverage');
@@ -149,5 +156,95 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
 
     expect(beverageIcons[0].attributes['name']).withContext('First icon in div.beverage should be matEmojiFoodBeverageOutline').toBe('matEmojiFoodBeverageOutline');
     expect(beverageIcons[1].attributes['name']).withContext('Second icon in div.beverage should be matFastfoodOutline').toBe('matFastfoodOutline');
+  });
+
+  it('should render correctly when coffee input is undefined', () => {
+    testHost.isSelected.set(true);
+    testHost.passCoffeeTemplate.set(false); // Coffee template will not be passed
+    testHost.passBeverageTemplate.set(true);  // Beverage template will be passed
+    fixture.detectChanges();
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).withContext('Could not find .plan div').toBeTruthy();
+
+    // Check for 2 direct children: description, beverage
+    expect(planDiv.children.length).withContext('.plan div should have 2 children when coffee is undefined').toBe(2);
+
+    // Check first child: div.description
+    const firstChild = planDiv.children[0];
+    expect(firstChild.name).withContext('First child should be a div').toBe('div');
+    expect(firstChild.nativeElement.classList.contains('description')).withContext('First child should have class "description"').toBeTrue();
+
+    // Check second child: div.beverage
+    const secondChild = planDiv.children[1];
+    expect(secondChild.name).withContext('Second child should be a div').toBe('div');
+    expect(secondChild.nativeElement.classList.contains('beverage')).withContext('Second child should have class "beverage"').toBeTrue();
+
+    // Check total ng-icon count (should be from beverage template only)
+    const ngIcons = planDiv.queryAll(By.css('ng-icon'));
+    expect(ngIcons.length).withContext('Should be 2 ng-icon elements (from beverage) when coffee is undefined').toBe(2);
+
+    // Verify beverage icons
+    const beverageDiv = secondChild; // Already identified as div.beverage
+    const beverageIcons = beverageDiv.queryAll(By.css('ng-icon')); // Icons specifically within beverageDiv
+    expect(beverageIcons.length).withContext('div.beverage should contain 2 ng-icons').toBe(2);
+    expect(beverageIcons[0].attributes['name']).withContext('First icon in div.beverage should be matEmojiFoodBeverageOutline').toBe('matEmojiFoodBeverageOutline');
+    expect(beverageIcons[1].attributes['name']).withContext('Second icon in div.beverage should be matFastfoodOutline').toBe('matFastfoodOutline');
+  });
+
+  it('should render correctly when beverage input is undefined', () => {
+    testHost.isSelected.set(true);
+    testHost.passCoffeeTemplate.set(true);   // Coffee template will be passed
+    testHost.passBeverageTemplate.set(false); // Beverage template will not be passed
+    fixture.detectChanges();
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).withContext('Could not find .plan div').toBeTruthy();
+
+    // Check for 2 direct children: coffee, description
+    expect(planDiv.children.length).withContext('.plan div should have 2 children when beverage is undefined').toBe(2);
+
+    // Check first child: div.coffee
+    const firstChild = planDiv.children[0];
+    expect(firstChild.name).withContext('First child should be a div').toBe('div');
+    expect(firstChild.nativeElement.classList.contains('coffee')).withContext('First child should have class "coffee"').toBeTrue();
+
+    // Check second child: div.description
+    const secondChild = planDiv.children[1];
+    expect(secondChild.name).withContext('Second child should be a div').toBe('div');
+    expect(secondChild.nativeElement.classList.contains('description')).withContext('Second child should have class "description"').toBeTrue();
+
+    // Check total ng-icon count (should be from coffee template only)
+    const ngIcons = planDiv.queryAll(By.css('ng-icon'));
+    expect(ngIcons.length).withContext('Should be 2 ng-icon elements (from coffee) when beverage is undefined').toBe(2);
+
+    // Verify coffee icons
+    const coffeeDiv = firstChild; // Already identified as div.coffee
+    const coffeeIcons = coffeeDiv.queryAll(By.css('ng-icon')); // Icons specifically within coffeeDiv
+    expect(coffeeIcons.length).withContext('div.coffee should contain 2 ng-icons').toBe(2);
+    expect(coffeeIcons[0].attributes['name']).withContext('First icon in div.coffee should be matCoffeeOutline').toBe('matCoffeeOutline');
+    expect(coffeeIcons[1].attributes['name']).withContext('Second icon in div.coffee should be matCoffeeMakerOutline').toBe('matCoffeeMakerOutline');
+  });
+
+  it('should render correctly when both coffee and beverage inputs are undefined', () => {
+    testHost.isSelected.set(true); // Description should still show if selected
+    testHost.passCoffeeTemplate.set(false);   // Coffee template will not be passed
+    testHost.passBeverageTemplate.set(false); // Beverage template will not be passed
+    fixture.detectChanges();
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).withContext('Could not find .plan div').toBeTruthy();
+
+    // Check for 1 direct child: description
+    expect(planDiv.children.length).withContext('.plan div should have 1 child when both coffee and beverage are undefined').toBe(1);
+
+    // Check only child: div.description
+    const firstChild = planDiv.children[0];
+    expect(firstChild.name).withContext('Only child should be a div').toBe('div');
+    expect(firstChild.nativeElement.classList.contains('description')).withContext('Only child should have class "description"').toBeTrue();
+
+    // Check total ng-icon count (should be zero)
+    const ngIcons = planDiv.queryAll(By.css('ng-icon'));
+    expect(ngIcons.length).withContext('Should be 0 ng-icon elements when both coffee and beverage are undefined').toBe(0);
   });
 });
