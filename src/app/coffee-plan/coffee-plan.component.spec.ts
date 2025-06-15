@@ -82,4 +82,38 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
     expect(planDiv.nativeElement.classList.contains('plan')).toBeTrue();
     expect(planDiv.nativeElement.classList.contains('active-plan')).toBeFalse();
   });
+
+  it('should have correct structure and icon count when all elements are rendered', () => {
+    // Ensure the component is in a state to render coffee and beverage sections
+    testHost.isSelected.set(true);
+    // The TestHostComponent already provides coffeeTemplateRef and beverageTemplateRef
+    // which contain 2 ng-icons each.
+
+    fixture.detectChanges();
+
+    const planDiv = componentDebugElement.query(By.css('.plan'));
+    expect(planDiv).withContext('Could not find .plan div').toBeTruthy();
+
+    // Check for 3 direct children
+    expect(planDiv.children.length).withContext('.plan div should have 3 children').toBe(3);
+
+    // Check first child: div.coffee
+    const firstChild = planDiv.children[0];
+    expect(firstChild.name).withContext('First child should be a div').toBe('div');
+    expect(firstChild.nativeElement.classList.contains('coffee')).withContext('First child should have class "coffee"').toBeTrue();
+
+    // Check second child: div.description
+    const secondChild = planDiv.children[1];
+    expect(secondChild.name).withContext('Second child should be a div').toBe('div');
+    expect(secondChild.nativeElement.classList.contains('description')).withContext('Second child should have class "description"').toBeTrue();
+
+    // Check third child: div.beverage
+    const thirdChild = planDiv.children[2];
+    expect(thirdChild.name).withContext('Third child should be a div').toBe('div');
+    expect(thirdChild.nativeElement.classList.contains('beverage')).withContext('Third child should have class "beverage"').toBeTrue();
+
+    // Check total ng-icon count
+    const ngIcons = planDiv.queryAll(By.css('ng-icon'));
+    expect(ngIcons.length).withContext('Should be 4 ng-icon elements in total').toBe(4);
+  });
 });
