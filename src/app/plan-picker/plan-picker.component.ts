@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, TemplateRef, viewChild } from '@angular/core';
 import { AddCoffeePlanComponent } from '../add-coffee-plan/add-coffee-plan.component';
 import { CoffeePlanComponent } from '../coffee-plan/coffee-plan.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { matCoffeeMakerOutline, matCoffeeOutline, matEmojiFoodBeverageOutline, matFastfoodOutline } from '@ng-icons/material-icons/outline';
+
+const COFFEE_PLAN_PREFIX = 'The';
 
 @Component({
   selector: 'app-plan-picker',
@@ -13,10 +15,8 @@ import { matCoffeeMakerOutline, matCoffeeOutline, matEmojiFoodBeverageOutline, m
       <app-add-coffee-plan (addCoffeePlan)="addPlan($event)" />
       {{selectedPlan()}}
       @for (plan of plans(); track plan) {
-        @let coffeeIcons = showCoffeeIcons(plan) ? coffee : undefined; 
-        @let beverageIcons = showBeverageIcons(plan) ? beverage : undefined;
-        <app-coffee-plan [name]="plan" (selectedPlan)="handleSelectPlan($event)" [selected]="selectedPlan() === plan"
-          [beverage]="beverageIcons" [coffee]="coffeeIcons" />
+        <app-coffee-plan [name]="plan" (selectedPlan)="handleSelectPlan($event)" [selected]="isPlanSelected(plan)"
+          [beverage]="getBeverageIconTemplate(plan)" [coffee]="getCoffeeIconTemplate(plan)" />
       }
 
       <ng-template #coffee>
@@ -38,6 +38,9 @@ import { matCoffeeMakerOutline, matCoffeeOutline, matEmojiFoodBeverageOutline, m
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlanPickerComponent {
+  coffeeTemplate = viewChild.required<TemplateRef<any>>('coffee');
+  beverageTemplate = viewChild.required<TemplateRef<any>>('beverage');
+
   plans = signal(['The Single', 'The Curious', 'The Addict', 'The Hacker', 'Vibe Coder']);
 
   selectedPlan = signal('');
@@ -50,11 +53,19 @@ export class PlanPickerComponent {
     this.plans.update((plans) => [...plans, name]);
   }
 
-  showCoffeeIcons(name: string, pattern = 'The'): boolean {
-    return this.selectedPlan() === name && name.startsWith(pattern);
+  isPlanSelected(planName: string): boolean {
+    return this.selectedPlan() === planName;
   }
 
-  showBeverageIcons(name: string, pattern = 'The'): boolean {
-    return this.selectedPlan() === name && !name.startsWith(pattern);
+  getCoffeeIconTemplate(planName: string): TemplateRef<any> | undefined {
+    return this.isPlanSelected(planName) && planName.startsWith(COFFEE_PLAN_PREFIX)
+           ? this.coffeeTemplate()
+           : undefined;
+  }
+
+  getBeverageIconTemplate(planName: string): TemplateRef<any> | undefined {
+    return this.isPlanSelected(planName) && !planName.startsWith(COFFEE_PLAN_PREFIX)
+           ? this.beverageTemplate()
+           : undefined;
   }
 }
