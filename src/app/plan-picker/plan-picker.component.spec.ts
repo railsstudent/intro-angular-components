@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PlanPickerComponent } from './plan-picker.component';
 import { CoffeePlanComponent } from '../coffee-plan/coffee-plan.component';
 import { AddCoffeePlanComponent } from '../add-coffee-plan/add-coffee-plan.component';
-import { NO_ERRORS_SCHEMA, TemplateRef, signal } from '@angular/core'; // Import signal
+import { NO_ERRORS_SCHEMA, TemplateRef, signal, provideZonelessChangeDetection } from '@angular/core'; // Import signal
 
 // Mock COFFEE_PLAN_PREFIX if it's used in the component and not exported directly for testing
 const COFFEE_PLAN_PREFIX = 'The';
@@ -25,6 +25,7 @@ describe('PlanPickerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PlanPickerComponent, CoffeePlanComponent, AddCoffeePlanComponent], // For standalone components
       schemas: [NO_ERRORS_SCHEMA], // Using NO_ERRORS_SCHEMA to avoid issues with NgIcon and other child components not critical to these tests
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PlanPickerComponent);
