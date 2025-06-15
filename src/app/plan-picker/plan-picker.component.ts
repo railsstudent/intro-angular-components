@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, TemplateRef, viewChild } from '@angular/core';
 import { AddCoffeePlanComponent } from '../add-coffee-plan/add-coffee-plan.component';
 import { CoffeePlanComponent } from '../coffee-plan/coffee-plan.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -9,11 +9,13 @@ import {
   matFastfoodOutline,
 } from '@ng-icons/material-icons/outline';
 
+const COFFEE_PLAN_PREFIX = 'The';
+
 @Component({
   selector: 'app-plan-picker',
-  imports: [NgIcon, CoffeePlanComponent, AddCoffeePlanComponent],
+  imports: [CoffeePlanComponent, AddCoffeePlanComponent, NgIcon],
   viewProviders: [
-    provideIcons({ matCoffeeMakerOutline, matCoffeeOutline, matEmojiFoodBeverageOutline, matFastfoodOutline }),
+    provideIcons({ matCoffeeOutline, matCoffeeMakerOutline, matEmojiFoodBeverageOutline, matFastfoodOutline }),
   ],
   template: `
     <div class="plans">
@@ -22,61 +24,37 @@ import {
       </app-add-coffee-plan>
       {{ selectedPlan() }}
       @for (plan of plans(); track plan) {
-        @let isSelected = selectedPlan() === plan;
-        @let coffeeTemplate = isSelected && plan.startsWith('The') ? coffee : undefined;
-        @let beverageTemplate = isSelected && !plan.startsWith('The') ? beverage : undefined;
         <app-coffee-plan
           [name]="plan"
           (selectedPlan)="handleSelectPlan($event)"
-          [selected]="isSelected"
-          [coffeeTemplate]="coffeeTemplate"
-          [beverageTemplate]="beverageTemplate"
+          [selected]="isPlanSelected(plan)"
+          [beverage]="getBeverageIconTemplate(plan)"
+          [coffee]="getCoffeeIconTemplate(plan)"
         />
       }
+
       <ng-template #coffee>
         <div class="coffee">
-          @for (iconName of ['matCoffeeOutline', 'matCoffeeMakerOutline']; track iconName) {
-            <ng-icon class="icon" [name]="iconName" />
-          }
+          <ng-icon name="matCoffeeOutline" />
+          <ng-icon name="matCoffeeMakerOutline" />
         </div>
       </ng-template>
 
       <ng-template #beverage>
         <div class="beverage">
-          @for (iconName of ['matEmojiFoodBeverageOutline', 'matFastfoodOutline']; track iconName) {
-            <ng-icon class="icon" [name]="iconName" />
-          }
+          <ng-icon name="matEmojiFoodBeverageOutline" />
+          <ng-icon name="matFastfoodOutline" />
         </div>
       </ng-template>
     </div>
   `,
-  styles: `
-    .coffee {
-      display: flex;
-      align-items: center;
-
-      > .icon {
-        width: 48px;
-        height: 48px;
-        color: brown;
-      }
-    }
-
-    .beverage {
-      display: flex;
-      flex-direction: column;
-      padding: 0.25rem;
-
-      > .icon {
-        width: 42px;
-        height: 42px;
-        color: green;
-      }
-    }
-  `,
+  styleUrl: './plan-picker.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlanPickerComponent {
+  coffeeTemplate = viewChild.required<TemplateRef<any>>('coffee');
+  beverageTemplate = viewChild.required<TemplateRef<any>>('beverage');
+
   plans = signal(['The Single', 'The Curious', 'The Addict', 'The Hacker', 'Vibe Coder']);
 
   selectedPlan = signal('');
@@ -90,5 +68,19 @@ export class PlanPickerComponent {
 
   addPlan(name: string) {
     this.plans.update((plans) => [...plans, name]);
+  }
+
+  isPlanSelected(planName: string): boolean {
+    return this.selectedPlan() === planName;
+  }
+
+  getCoffeeIconTemplate(planName: string): TemplateRef<any> | undefined {
+    return this.isPlanSelected(planName) && planName.startsWith(COFFEE_PLAN_PREFIX) ? this.coffeeTemplate() : undefined;
+  }
+
+  getBeverageIconTemplate(planName: string): TemplateRef<any> | undefined {
+    return this.isPlanSelected(planName) && !planName.startsWith(COFFEE_PLAN_PREFIX)
+      ? this.beverageTemplate()
+      : undefined;
   }
 }

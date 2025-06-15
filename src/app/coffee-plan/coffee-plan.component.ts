@@ -6,11 +6,11 @@ import { ChangeDetectionStrategy, Component, input, output, TemplateRef } from '
   imports: [NgTemplateOutlet],
   template: `
     <div class="plan" (click)="selectPlan()" [class]="{ 'active-plan': selected() }">
-      <ng-container [ngTemplateOutlet]="coffeeTemplate()" />
+      <ng-container [ngTemplateOutlet]="coffee()" />
       <div class="description">
         <span class="title"> {{ name() }} </span>
       </div>
-      <ng-container [ngTemplateOutlet]="beverageTemplate()" />
+      <ng-container [ngTemplateOutlet]="beverage()" />
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,8 +18,8 @@ import { ChangeDetectionStrategy, Component, input, output, TemplateRef } from '
 export class CoffeePlanComponent {
   name = input('Default Plan');
   selected = input(false);
-  coffeeTemplate = input<TemplateRef<any> | undefined>(undefined);
-  beverageTemplate = input<TemplateRef<any> | undefined>(undefined);
+  coffee = input<TemplateRef<any> | undefined>(undefined);
+  beverage = input<TemplateRef<any> | undefined>(undefined);
 
   selectedPlan = output<string>();
 
