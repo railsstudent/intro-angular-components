@@ -44,8 +44,8 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TestHostComponent], // CoffeePlanComponent removed
-      imports: [NgIcon], // NgIcon might be needed for the test setup itself, TestHostComponent handles its own
+      declarations: [], // TestHostComponent removed as it's standalone
+      imports: [NgIcon, TestHostComponent], // NgIcon for root icons, TestHostComponent because it's standalone
       providers: [
         provideZonelessChangeDetection(),
         provideIcons({
