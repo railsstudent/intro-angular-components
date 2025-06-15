@@ -3,10 +3,15 @@ import { By } from '@angular/platform-browser';
 import { Component, DebugElement } from '@angular/core';
 import { CoffeePlanComponent } from './coffee-plan.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { matCoffeeOutline, matCoffeeMakerOutline, matEmojiFoodBeverageOutline, matFastfoodOutline } from '@ng-icons/material-icons/outline';
+import {
+  matCoffeeOutline,
+  matCoffeeMakerOutline,
+  matEmojiFoodBeverageOutline,
+  matFastfoodOutline,
+} from '@ng-icons/material-icons/outline';
 
 @Component({
-  template: `<app-coffee-plan [name]="planName" [selected]="isSelected"></app-coffee-plan>`
+  template: `<app-coffee-plan [name]="planName" [selected]="isSelected"></app-coffee-plan>`,
 })
 class TestHostComponent {
   planName: string = 'Default Plan';
@@ -27,9 +32,9 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
           matCoffeeOutline,
           matCoffeeMakerOutline,
           matEmojiFoodBeverageOutline,
-          matFastfoodOutline
-        })
-      ]
+          matFastfoodOutline,
+        }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
@@ -49,7 +54,7 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
   };
 
   const getIconElementByName = (iconName: string): DebugElement | null => {
-     return componentDebugElement.query(By.css(`ng-icon[name="${iconName}"]`));
+    return componentDebugElement.query(By.css(`ng-icon[name="${iconName}"]`));
   };
 
   it('should create the component', () => {
@@ -75,8 +80,8 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
 
     it('coffee icons div should be before description div and have class "coffee"', () => {
       const children = getPlanDivChildren();
-      const coffeeDivIndex = children.findIndex(el => el === coffeeIconWrapper);
-      const descriptionDivIndex = children.findIndex(el => el === descriptionDiv);
+      const coffeeDivIndex = children.findIndex((el) => el === coffeeIconWrapper);
+      const descriptionDivIndex = children.findIndex((el) => el === descriptionDiv);
       expect(coffeeDivIndex).not.toBe(-1, 'Coffee div wrapper not found');
       expect(descriptionDivIndex).not.toBe(-1, 'Description div not found');
       expect(coffeeDivIndex).toBeLessThan(descriptionDivIndex);
@@ -119,8 +124,8 @@ describe('CoffeePlanComponent with .coffee and .beverage Classes', () => {
 
     it('beverage icons div should be after description div and have class "beverage"', () => {
       const children = getPlanDivChildren();
-      const beverageDivIndex = children.findIndex(el => el === beverageIconWrapper);
-      const descriptionDivIndex = children.findIndex(el => el === descriptionDiv);
+      const beverageDivIndex = children.findIndex((el) => el === beverageIconWrapper);
+      const descriptionDivIndex = children.findIndex((el) => el === descriptionDiv);
       expect(beverageDivIndex).not.toBe(-1, 'Beverage div wrapper not found');
       expect(descriptionDivIndex).not.toBe(-1, 'Description div not found');
       expect(beverageDivIndex).toBeGreaterThan(descriptionDivIndex);

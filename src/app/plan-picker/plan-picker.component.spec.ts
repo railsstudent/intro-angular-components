@@ -16,16 +16,16 @@ describe('PlanPickerComponent', () => {
   beforeEach(async () => {
     // Initialize basic mocks for TemplateRef
     mockCoffeeTemplateRef = {
-      elementRef: {} // A very basic mock, adjust if more properties are needed
+      elementRef: {}, // A very basic mock, adjust if more properties are needed
     } as TemplateRef<any>;
     mockBeverageTemplateRef = {
-      elementRef: {}
+      elementRef: {},
     } as TemplateRef<any>;
 
     await TestBed.configureTestingModule({
       imports: [PlanPickerComponent, CoffeePlanComponent, AddCoffeePlanComponent], // For standalone components
       schemas: [NO_ERRORS_SCHEMA], // Using NO_ERRORS_SCHEMA to avoid issues with NgIcon and other child components not critical to these tests
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PlanPickerComponent);
@@ -52,8 +52,6 @@ describe('PlanPickerComponent', () => {
     // However, with viewChild signals, they are properties.
     // (component as any).coffeeTemplate = signal(mockCoffeeTemplateRef);
     // (component as any).beverageTemplate = signal(mockBeverageTemplateRef);
-
-
   });
 
   it('should create', () => {
@@ -113,7 +111,7 @@ describe('PlanPickerComponent', () => {
       // Now check for a different, unselected plan
       expect(component.getCoffeeIconTemplate('Unselected ' + COFFEE_PLAN_PREFIX + ' Plan')).toBeUndefined();
     });
-     it('should return undefined if plan name starts with COFFEE_PLAN_PREFIX but is not selected', () => {
+    it('should return undefined if plan name starts with COFFEE_PLAN_PREFIX but is not selected', () => {
       // Ensure no plan is selected initially or select a different one
       component.handleSelectPlan('Another Plan');
       fixture.detectChanges();
